@@ -1,0 +1,45 @@
+/* Basic body styling (can be complemented by Tailwind utility classes) */
+body {
+    font-family: sans-serif;
+    margin: 0;
+}
+
+/* Styling for tab buttons - can be customized further or primarily use Tailwind */
+/* Example: ensure minimum width or specific inactive state if not handled by JS active classes directly */
+/* #tabsContainer button {
+    transition: background-color 0.3s ease;
+} */
+
+/* Active tab styling is handled by JS toggling Tailwind classes like 'bg-red-500', 'text-white' */
+/* Inactive tab styling is handled by JS toggling Tailwind classes like 'bg-gray-200', 'text-gray-700' */
+
+/* Video content pane - ensure it takes up space even if iframe is slow to load */
+.video-content-pane {
+    /* If you want a fixed aspect ratio for videos, you might need something like this: */
+    /* position: relative; */
+    /* padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    /* height: 0; */
+    /* overflow: hidden; */
+}
+
+.video-content-pane iframe {
+    /* If using padding-bottom trick for aspect ratio: */
+    /* position: absolute; */
+    /* top: 0; */
+    /* left: 0; */
+    width: 100%;
+    /* height: 100%; */ /* Make height responsive if using aspect ratio padding */
+    min-height: 400px; /* Minimum height for video players */
+}
+
+/* Ensure horizontal scrolling for tabs on smaller screens if many tabs */
+#tabsContainer {
+    /* Tailwind 'overflow-x-auto' is already applied in index.html, which is good. */
+    /* You can add scrollbar styling here if desired, though it's browser-dependent. */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+#tabsContainer::-webkit-scrollbar { /* Chrome, Safari, Opera */
+    display: none;
+}

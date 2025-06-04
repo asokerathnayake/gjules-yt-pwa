@@ -1,0 +1,15 @@
+{
+  "short_name": "YT Hub",
+  "name": "YouTube Channel Aggregator",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#dc2626"
+}

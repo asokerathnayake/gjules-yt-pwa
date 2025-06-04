@@ -1,0 +1,17 @@
+{
+  "appTitle": "My YouTube Hub",
+  "channels": [
+    {
+      "name": "Tech Reviews",
+      "url": "https://www.youtube.com/playlist?list=PLQY2H8rRoyvz_mOaX3fDk2MDW4L7M23B-"
+    },
+    {
+      "name": "Google Developers",
+      "url": "https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw"
+    },
+    {
+      "name": "Gaming News",
+      "url": "https://www.youtube.com/playlist?list=PLpg6WLs8kxGO9fL0VAq7w2k5zH3dfp_Oc"
+    }
+  ]
+}
