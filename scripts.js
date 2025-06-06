@@ -23,43 +23,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     tabButton.dataset.channelIndex = index;
 
                     // Create Content Pane (iframe container)
+                    let embedUrl = '';
+                    let CId = ''; // To store extracted Channel ID if applicable
                     const contentPane = document.createElement('div');
                     contentPane.className = 'video-content-pane hidden'; // Hidden by default
                     contentPane.id = `content-pane-${index}`;
 
-                    let embedUrl = '';
                     if (channel.url.includes('playlist?list=')) {
                         const playlistId = new URL(channel.url).searchParams.get('list');
                         embedUrl = `https://www.youtube.com/embed/videoseries?list=${playlistId}`;
                     } else if (channel.url.includes('/channel/')) {
-                        const channelId = channel.url.substring(channel.url.lastIndexOf('/') + 1);
-                        // Note: YouTube removed the ability to embed a channel's latest videos directly
-                        // using a simple channel ID embed for "uploads".
-                        // A common workaround is to link to the channel's "uploads" playlist if known,
-                        // or just link to the channel page.
-                        // For this example, we'll create an embed for the channel's videos page,
-                        // which isn't ideal as it's not a direct feed embed.
-                        // A better solution would involve the YouTube Data API, which is outside the scope here.
-                        // For now, let's assume we might have a playlist for recent uploads.
-                        // We'll use a placeholder iframe or a message if a direct feed isn't possible.
-                        // The user should ideally provide a playlist URL for channels for best results.
-
-                        // Fallback: creating an iframe that shows uploads from a channel using the channelId.
-                        // This specific format `https://www.youtube.com/embed?listType=channel&list=${channelId}` is unofficial
-                        // and might not work consistently or could be deprecated.
-                        // The most reliable way for channel content is for the user to provide the "uploads" playlist URL.
-                        embedUrl = `https://www.youtube.com/embed?listType=channel&list=${channelId}`;
-                        // If the above doesn't work as expected, a message could be shown.
-                        // For a more robust solution, one would use the YouTube Data API to fetch the uploads playlist ID.
+                        CId = channel.url.substring(channel.url.lastIndexOf('/') + 1);
+                        if (CId.startsWith('UC')) {
+                             embedUrl = `https://www.youtube.com/embed/videoseries?list=${CId.replace(/^UC/, 'UU')}`;
+                        } else {
+                             // If it's not a standard UC channel ID, this might not work as expected.
+                             // Fallback to listType=channel, though it's less reliable.
+                             embedUrl = `https://www.youtube.com/embed?listType=channel&list=${CId}`;
+                             console.warn(`Channel URL ${channel.url} for "${channel.name}" does not have a standard 'UC' prefix. Attempting listType=channel embed, which may be unreliable. Consider using the channel's 'uploads' playlist URL directly.`);
+                        }
+                    } else if (channel.url.includes('/c/')) {
+                        // For /c/ custom URLs, extracting a reliable channel ID to form a UU playlist is hard without API.
+                        // We will attempt to use the listType=channel method with the custom name.
+                        // This is often unreliable. Best to use playlist or /channel/UC... URL.
+                        const customUrlPart = channel.url.substring(channel.url.lastIndexOf('/c/') + 3);
+                        embedUrl = `https://www.youtube.com/embed?listType=channel&list=${customUrlPart}`;
+                        console.warn(`Channel URL ${channel.url} for "${channel.name}" is a /c/ custom URL. Attempting listType=channel embed, which can be unreliable. Best to use the channel's 'uploads' playlist URL or /channel/UC... URL directly.`);
+                    } else if (channel.url.includes('/@')) {
+                        // For /@handle URLs, direct embedding is not reliably supported.
+                        contentPane.innerHTML = `<div class="p-4 text-center">
+                            <p class="font-semibold text-lg">Cannot directly embed from "/@handle" URLs.</p>
+                            <p class="mt-2 text-gray-700">For the channel "${channel.name}", please update <code>config.json</code> with its specific "uploads" playlist URL or a standard <code>/channel/UC...</code> URL.</p>
+                            <p class="mt-1 text-sm text-gray-500">Example playlist URL: <code>https://www.youtube.com/playlist?list=UU...</code> (replace UU with UC from channel ID).</p>
+                        </div>`;
+                        embedUrl = null; // Prevent iframe creation
                     } else {
-                        console.warn(`Unsupported YouTube URL format: ${channel.url}. Please use a playlist or channel URL.`);
-                        contentPane.innerHTML = `<p class="text-red-500">Unsupported YouTube URL format for "${channel.name}". Please use a valid playlist or channel URL.</p>`;
+                        console.warn(`Unsupported YouTube URL format: ${channel.url} for channel "${channel.name}".`);
+                        contentPane.innerHTML = `<p class="text-red-500">Unsupported YouTube URL format for "${channel.name}". Please use a valid playlist, /channel/UC..., or /c/... URL. '/@handle' URLs require manual playlist configuration.</p>`;
+                        embedUrl = null; // Prevent iframe creation
                     }
 
                     if (embedUrl) {
                         const iframe = document.createElement('iframe');
                         iframe.width = '100%';
-                        iframe.height = '500'; // Default height, can be adjusted via CSS
+                        iframe.height = '500'; // Default height
                         iframe.src = embedUrl;
                         iframe.frameBorder = '0';
                         iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
